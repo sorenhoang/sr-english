@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS cards;
+DROP TABLE IF EXISTS senses;
+DROP TABLE IF EXISTS user_settings;
+DROP TABLE IF EXISTS users;
+DROP FUNCTION IF EXISTS update_updated_at();
