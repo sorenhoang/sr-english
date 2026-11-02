@@ -1,0 +1,11 @@
+# sr harness
+.sr/*
+!.sr/harness.json
+!.sr/features/
+.sr/features/*/*
+!.sr/features/*/design.md
+!.sr/features/*/plan.md
+
+# local env
+.env
+*.local

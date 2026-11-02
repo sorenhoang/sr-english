@@ -1,0 +1,8 @@
+version: "2"
+linters:
+  exclusions:
+    rules:
+      # Deferred Close on test HTTP responses/rows has nothing useful to do with the error.
+      - path: _test\.go
+        linters: [errcheck]
+        text: "Close"

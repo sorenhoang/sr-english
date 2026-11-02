@@ -1,0 +1,10 @@
+{
+  "verify": "docker compose up -d --wait db && cd api && go vet ./... && golangci-lint run ./... && go test ./... && cd ../web && pnpm lint && pnpm build && pnpm test --run",
+  "smoke": "cd api && go build ./... && cd ../web && pnpm exec tsc --noEmit",
+  "retryBudget": 3,
+  "testGlobs": [
+    "api/**/*_test.go",
+    "web/src/**/*.test.ts",
+    "web/src/**/*.test.tsx"
+  ]
+}
