@@ -1,8 +1,10 @@
 package httpapi
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -38,6 +40,16 @@ func (h sessionHandler) register(r chi.Router) {
 
 func (h sessionHandler) today(w http.ResponseWriter, r *http.Request) {
 	ctx, userID := r.Context(), currentUser(r).ID
+	// ?extra=N asks for N more new words on top of today's remaining quota ("học thêm").
+	extra := 0
+	if v := r.URL.Query().Get("extra"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 0 || n > h.learning.DailyNewMax {
+			writeError(w, http.StatusBadRequest, "validation", fmt.Sprintf("extra must be between 0 and %d", h.learning.DailyNewMax))
+			return
+		}
+		extra = n
+	}
 	s, err := h.settings.Get(ctx, userID)
 	if err != nil {
 		internalError(w, err)
@@ -54,7 +66,7 @@ func (h sessionHandler) today(w http.ResponseWriter, r *http.Request) {
 		internalError(w, err)
 		return
 	}
-	fresh, err := h.vocab.New(ctx, userID, s.Level, s.DailyNew-learned)
+	fresh, err := h.vocab.New(ctx, userID, s.Level, max(s.DailyNew-learned, 0)+extra)
 	if err != nil {
 		internalError(w, err)
 		return

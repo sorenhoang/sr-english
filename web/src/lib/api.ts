@@ -95,7 +95,7 @@ export function createApi({ baseUrl, getToken, fetchFn = fetch }: Options) {
   }
 
   return {
-    today: () => call<{ tasks: Task[] }>('GET', '/api/v1/session/today'),
+    today: (extra = 0) => call<{ tasks: Task[] }>('GET', `/api/v1/session/today${extra > 0 ? `?extra=${extra}` : ''}`),
     stats: () => call<Stats>('GET', '/api/v1/stats'),
     review: (senseId: string, rating: number) => call<Card>('POST', '/api/v1/review', { sense_id: senseId, rating }),
     settings: () => call<Settings>('GET', '/api/v1/settings'),

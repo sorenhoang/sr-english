@@ -9,6 +9,8 @@ type State =
 
 const FORBIDDEN = 'Tài khoản này không có quyền truy cập'
 const EMPTY_STATS: Stats = { streak: 0, today_new: 0, today_reviews: 0 }
+// Words fetched per "Học thêm" click once today's quota is done.
+const EXTRA_WORDS = 10
 
 type PassageTask = { kind: 'reading' | 'listening'; id: string }
 
@@ -23,6 +25,8 @@ const dateLabel = () =>
 
 export function Today({ api, onStart, onOpenPassage }: Props) {
   const [state, setState] = useState<State>({ kind: 'loading' })
+  const [extraError, setExtraError] = useState<string | null>(null)
+  const [loadingExtra, setLoadingExtra] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -83,9 +87,25 @@ export function Today({ api, onStart, onOpenPassage }: Props) {
           {nothing ? 'Hôm nay đã xong' : 'Bắt đầu'}
         </button>
         {nothing && (
-          <p className="muted small">
-            Không có từ để học: hoặc bạn đã xong, hoặc từ ở cấp độ này chưa có nghĩa tiếng Việt (cần chạy enrich).
-          </p>
+          <>
+            <button type="button" className="btn" disabled={loadingExtra} onClick={async () => {
+              setLoadingExtra(true)
+              setExtraError(null)
+              try {
+                const more = await api.today(EXTRA_WORDS)
+                const tasks = more?.tasks ?? []
+                if (tasks.some((t) => t.type === 'vocab_new' && (t.items?.length ?? 0) > 0)) onStart(tasks)
+                else setExtraError('Đã học hết từ mới ở cấp độ này. Thử chọn cấp độ khác trong Cài đặt.')
+              } catch (e) {
+                setExtraError(e instanceof Error ? e.message : 'Không tải được thêm từ.')
+              } finally {
+                setLoadingExtra(false)
+              }
+            }}>
+              {`Học thêm ${EXTRA_WORDS} từ mới`}
+            </button>
+            {extraError && <p role="alert" className="error">{extraError}</p>}
+          </>
         )}
       </div>
 
