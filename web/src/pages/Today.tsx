@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Icon, type IconName } from '../components/Icon'
 import { ApiError, type Api, type Stats, type Task } from '../lib/api'
-import { LEVELS } from '../lib/levels'
 
 type State =
   | { kind: 'loading' }
   | { kind: 'error'; message: string }
-  | { kind: 'ready'; tasks: Task[]; stats: Stats; level: string | null }
+  | { kind: 'ready'; tasks: Task[]; stats: Stats }
 
 const FORBIDDEN = 'Tài khoản này không có quyền truy cập'
 const EMPTY_STATS: Stats = { streak: 0, today_new: 0, today_reviews: 0 }
@@ -28,11 +27,9 @@ export function Today({ api, onStart, onOpenPassage }: Props) {
   useEffect(() => {
     let cancelled = false
     setState({ kind: 'loading' })
-    // Settings only decorate the level card; the plan still shows if they fail to load.
-    const level = api.settings().then((s) => s?.level ?? null, () => null)
-    Promise.all([api.today(), api.stats(), level])
-      .then(([today, stats, lvl]) => {
-        if (!cancelled) setState({ kind: 'ready', tasks: today?.tasks ?? [], stats: stats ?? EMPTY_STATS, level: lvl })
+    Promise.all([api.today(), api.stats()])
+      .then(([today, stats]) => {
+        if (!cancelled) setState({ kind: 'ready', tasks: today?.tasks ?? [], stats: stats ?? EMPTY_STATS })
       })
       .catch((e: unknown) => {
         if (cancelled) return
@@ -92,21 +89,6 @@ export function Today({ api, onStart, onOpenPassage }: Props) {
         )}
       </div>
 
-      {state.level && (
-        <div className="card stack">
-          <h2>Cấp độ {state.level}</h2>
-          <div className="levels">
-            {LEVELS.map((l) => {
-              const rank = LEVELS.indexOf(l) - LEVELS.indexOf(state.level ?? 'A1')
-              return (
-                <span key={l} className={`level-chip ${rank < 0 ? 'past' : rank === 0 ? 'current' : ''}`}>
-                  {l}
-                </span>
-              )
-            })}
-          </div>
-        </div>
-      )}
     </section>
   )
 }
