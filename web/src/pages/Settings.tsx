@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Api, Settings } from '../lib/api'
-import { LEVELS } from '../lib/levels'
+import { levelOptions } from '../lib/levels'
 
 export function SettingsPage({ api }: { api: Api }) {
   const [form, setForm] = useState<Settings | null>(null)
@@ -48,7 +48,7 @@ export function SettingsPage({ api }: { api: Api }) {
       >
         <label htmlFor="settings-level">Cấp độ</label>
         <select id="settings-level" value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })}>
-          {LEVELS.map((l) => (
+          {levelOptions(form.level).map((l) => (
             <option key={l} value={l}>
               {l}
             </option>
