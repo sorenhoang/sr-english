@@ -96,3 +96,20 @@ label { font-weight: 600; font-size: 14px; color: var(--ink-2); }
 .sheet { position: fixed; left: 0; right: 0; bottom: 0; max-width: 480px; margin: 0 auto; border-radius: 24px 24px 0 0; box-shadow: 0 -8px 24px rgb(15 23 42 / 12%); z-index: 10; }
 .word-sm { font-size: 24px; }
 audio { width: 100%; }
+
+/* Prototype styling: task rows, level chips, nav icons */
+.task { flex-direction: row; align-items: center; gap: 14px; }
+.task-text { display: flex; flex-direction: column; gap: 2px; text-align: left; }
+.task-button { width: 100%; background: none; border: 0; border-top: 1px solid var(--line); padding: 12px 0; font: inherit; color: inherit; cursor: pointer; }
+.icon-box { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0; }
+.icon-box.indigo { background: #eef2ff; color: #3730a3; }
+.icon-box.teal { background: var(--accent-soft); color: var(--accent-ink); }
+.icon-box.amber { background: var(--streak-soft); color: var(--streak); }
+.icon-box.pink { background: #fce7f3; color: #9d174d; }
+.tight-row { gap: 6px; display: inline-flex; align-items: center; }
+.levels { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.level-chip { text-align: center; padding: 6px 0; border-radius: 8px; font-size: 13px; font-weight: 600; background: #f1f3f6; color: var(--muted); }
+.level-chip.past { background: var(--accent-soft); color: var(--accent-ink); }
+.level-chip.current { background: var(--accent); color: #fff; }
+.nav button { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.screen > h1, .stack > h1 { letter-spacing: -0.2px; }

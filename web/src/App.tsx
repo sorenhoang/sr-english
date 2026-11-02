@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Icon, type IconName } from './components/Icon'
 import type { Api, Task } from './lib/api'
 import type { AuthClient, Session } from './lib/auth'
 import { browserSpeech, type Speech } from './lib/speech'
@@ -14,11 +15,11 @@ import { Today } from './pages/Today'
 // Without an auth client (e.g. a bare render) the app stays on the sign-in screen.
 type Tab = 'today' | 'practice' | 'words' | 'settings'
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'today', label: 'Hôm nay' },
-  { id: 'practice', label: 'Luyện tập' },
-  { id: 'words', label: 'Từ của tôi' },
-  { id: 'settings', label: 'Cài đặt' },
+const TABS: { id: Tab; label: string; icon: IconName }[] = [
+  { id: 'today', label: 'Hôm nay', icon: 'home' },
+  { id: 'practice', label: 'Luyện tập', icon: 'grid' },
+  { id: 'words', label: 'Từ của tôi', icon: 'book' },
+  { id: 'settings', label: 'Cài đặt', icon: 'gear' },
 ]
 
 type Props = { auth?: AuthClient; api?: Api; speech?: Speech }
@@ -57,7 +58,18 @@ function App({ auth, api, speech = browserSpeech() }: Props) {
         />
       ) : (
         <>
-          {tab === 'today' && <Today key={visit} api={api} onStart={setLearning} />}
+          {tab === 'today' && (
+            <Today
+              key={visit}
+              api={api}
+              onStart={setLearning}
+              onOpenPassage={({ kind, id }) => {
+                setTab('practice')
+                setPractice(kind)
+                setReading(id)
+              }}
+            />
+          )}
           {tab === 'practice' && reading && practice && (
             <Reader api={api} id={reading} mode={practice} onBack={() => setReading(null)} />
           )}
@@ -79,6 +91,7 @@ function App({ auth, api, speech = browserSpeech() }: Props) {
                   setReading(null)
                 }}
               >
+                <Icon name={t.icon} />
                 {t.label}
               </button>
             ))}
