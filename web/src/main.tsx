@@ -7,13 +7,14 @@ import { createApi } from './lib/api'
 import { supabaseAuth } from './lib/auth'
 
 const { VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_API_URL } = import.meta.env
-if (!VITE_SUPABASE_URL || !VITE_SUPABASE_ANON_KEY || !VITE_API_URL) {
-  throw new Error('Missing VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY or VITE_API_URL (see web/.env.example)')
+if (!VITE_SUPABASE_URL || !VITE_SUPABASE_ANON_KEY) {
+  throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY (see web/.env.example)')
 }
 const supabase = createClient(VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
 const auth = supabaseAuth(supabase)
 const api = createApi({
-  baseUrl: VITE_API_URL,
+  // Empty means same origin: on Vercel, web/vercel.json proxies /api/* to the API project (no CORS needed).
+  baseUrl: VITE_API_URL ?? '',
   getToken: async () => (await auth.getSession())?.accessToken ?? null,
 })
 

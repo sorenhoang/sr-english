@@ -30,6 +30,19 @@ pnpm install && pnpm dev
 Optional tuning (env): `DAILY_NEW_DEFAULT` (10), `DAILY_NEW_MAX` (50), `MAX_REVIEWS_PER_DAY` (200),
 `DESIRED_RETENTION` (0.9), `COVERAGE_THRESHOLD` (0.95).
 
+## Deploy (free: Supabase + 2 Vercel projects)
+
+1. **Supabase** (free): create a project → Authentication → Providers → enable Google.
+   Copy the *transaction pooler* connection string (port 6543), the project URL and the anon key.
+   Seed from your machine: `DATABASE_URL=<pooler url> go run ./cmd/seed` (then `enrich`, `ingest-voa`).
+2. **Vercel project `sr-english-api`**: root directory `api` (Go preset via `api/vercel.json`, runs `cmd/api`).
+   Env: `DATABASE_URL`, `SUPABASE_JWKS_URL`, `SUPABASE_ISSUER`, `ALLOWED_EMAILS`.
+3. **Vercel project `sr-english`**: root directory `web` (Vite). Env: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
+   `web/vercel.json` proxies `/api/*` to `https://sr-english-api.vercel.app` — change it if your API project has another name.
+4. Supabase → Authentication → URL configuration: add the web URL to Site URL / Redirect URLs.
+
+Free-tier notes: Supabase pauses after 7 days without activity; the first request after idle is slower (cold start).
+
 ## Checks
 
 `python3 ~/.claude/hooks/sr/sr_hooks.py verify` runs vet, golangci-lint, Go tests (against the compose DB),
